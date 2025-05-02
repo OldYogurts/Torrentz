@@ -5,7 +5,7 @@ import Buffer from 'buffer';
 import fs from 'fs';
 import * as tracker from './tracker.js';
 import * as message from './message.js';
-import * as Pieces  from './pieces.js';
+import { Pieces }  from './pieces.js';
 import * as Queue   from './queue.js';
 
 const buffer = Buffer.Buffer;
@@ -19,6 +19,7 @@ export const download_torrent= (torrent,path)  => {
 		const file = fs.openSync(path,'w');
 		peers.forEach(peer => {
 			download(peer,torrent,pieces,file);
+			console.log('PEER: ',peer);
 			})
 		});
 	};
@@ -31,7 +32,6 @@ export function download(peer,torrent,pieces,file){
 	
 	});
 	const queue = new Queue.Queue(torrent);
-	console.log(queue);
 
 	On_Message_Handle(socket,msg => msgHandler(msg,socket,pieces,queue));
 
@@ -54,12 +54,15 @@ function On_Message_Handle(socket,callback){
 	});
 };
 
-function msgHandler(msg , socket,requested){
+function msgHandler(msg , socket, requested){
 	if (isHandsake(msg)) {
+		console.log('handsake done');
 		socket.write(message.Intrested())
 	}
 	else { 
 		const m = message.parse(msg);
+
+		console.log('message',m);
 		if (m.id === 0) chockeHandle();
 		if (m.id === 1) unchockeHandle();
 		if (m.id === 4) havehandle(m.payload,socket,requested,queue);

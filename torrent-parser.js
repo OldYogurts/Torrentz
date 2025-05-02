@@ -1,13 +1,12 @@
 'use strict';
 import * as fs from 'fs';
 import bencode from 'bencode';
-import cyrpto from 'crypto';
+import crypto from 'crypto';
 import bignum from 'bignum';
-
 export const open = (filepath) => {
 		const data = fs.readFileSync(filepath)
 		const res = bencode.decode( data,0,data.length,'utf8' ); 
-		console.log(res);	
+		console.log(res);
 	 	return bencode.decode(fs.readFileSync(filepath));
 
 };
@@ -18,10 +17,10 @@ export const size = (torrent) => {
 	return bignum.toBuffer(size,{size:8});
 };
 
-export const infoHash = (torrent) => {
-	const info = bencode.decode(torrent.info);
-	const hash = crypto.createHash('SHA1').update(info).digest();
-	console.log('INFO HASH ::',hash);
+export const info_Hash = (torrent) => {
+	
+	const info = bencode.encode(torrent.info);
+	const hash = crypto.createHash('sha1').update(info).digest();
 	return hash;
 };
 
